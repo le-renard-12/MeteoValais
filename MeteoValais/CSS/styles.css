@@ -342,13 +342,11 @@ ul{
     align-items: center;
     display: flex;
     justify-content: center;
-    width: 98.5%;
     height: 38px;
     font-size: 20pt;
     font-family: Courier New;
     color:#fff;
     transition: background-color 0.5s;
-    padding: 5px;
     border:2px;
     border-style: solid;
     background-color:#b2d8d8;
@@ -359,12 +357,22 @@ ul{
 
 
 
-.top-row{
+#top-row{
+    width: 100%;
     margin-top: 20px;
     display: grid;
     grid-gap: 30px;
-    grid-template-columns: 1fr 1fr 1fr 3fr;
+    grid-template-columns: 1fr 1.5fr;
 }
+
+#top-row #section-2{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 30px;
+}
+
+
+
 
 .label-font{
     font-size: 10pt;
@@ -372,16 +380,17 @@ ul{
     color:#fff
 }
 
-.uv-meter{
-    margin-left: 0px;
-    width: 100%;
-    padding: 5px;
+.card{
+    
+    height: 300px;
+    padding: 0px;
     
     background-color: rgba(178, 216, 216, .3);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border:2px solid #004c4c;
     border-radius: 5px;
+    
     box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.415);
     
     display: grid;
@@ -463,28 +472,15 @@ ul{
     stroke-width: 1;
 }
 
-.wind{
-    width: 100%;
-    padding: 5px;
-    justify-content: center;
-    background-color: rgba(178, 216, 216, .3);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border:2px solid #004c4c;
-    border-radius: 5px;
-    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.415);
-
-    display: grid;
-    grid-template-columns: 1fr;
-}
 
 .weather-code-svg{
     padding-right: 25px;
 }
 
-.location-overwiew{
-    width: 100% - 5px;
-    padding: 5px;
+#location-overwiew{
+    width: 100%;
+    padding: 0px;
+    height: 100%;
     justify-content: center;
     background-color: rgba(178, 216, 216, .3);
     backdrop-filter: blur(15px);
@@ -513,7 +509,7 @@ ul{
     justify-content:center;
 }
 
-.graph{
+#graph{
     padding: 5px;
     justify-content: center;
     border:2px solid #004c4c;
@@ -521,7 +517,7 @@ ul{
     box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.415);
 }
 
-.graph-background{
+#graph-background{
     margin-top: 20px;
     border-radius: 5px;
     background-color: rgba(178, 216, 216, .3);
@@ -785,8 +781,13 @@ button{
         padding: 0px;
     }
 
+    #top-row{
+        grid-template-columns: 1fr 
+    }
    
 }
+
+
 
 .wrapper{
     background-color: #fff;
