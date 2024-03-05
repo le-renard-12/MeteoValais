@@ -29,7 +29,7 @@ let data = {
   },
   {
     type: "bar",
-    label: 'Humidity (mm)',
+    label: 'Rain (mm)',
     data: rain,
     borderWidth: 1,
     borderColor: 'blue',
