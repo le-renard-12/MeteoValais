@@ -1,2 +1,5 @@
 # MeteoValais
-A Website for the meteo of valis
+
+A Website for the weatherforcast of Valis
+
+school project EPTM SION
