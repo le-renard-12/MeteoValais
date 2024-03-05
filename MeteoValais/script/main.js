@@ -18,7 +18,7 @@ var rain = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7 ,0.8];
 var temperatures = [1, 2, 3, 4, 5, 6];
 
 //default graf-1 data
-const data = {
+let data = {
   labels: next_6_hour,
   datasets: [{
     type: "line",
@@ -133,37 +133,40 @@ function geoCode() {
   fetchData().then(datapoints => {
     const latitude = datapoints.results[0].latitude
     const longitude = datapoints.results[0].longitude;
+    
+    
     //unit selecter
      
-    var url_selected; //'https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,rain&daily=weathercode,uv_index_max,temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=Europe%2FBerlin';
-    const url_celsius = 'https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,rain&daily=weathercode,uv_index_max,temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=Europe%2FBerlin';
-    const url_faraneit ='https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,rain&daily=weathercode,uv_index_max,temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=Europe%2FBerlin&temperature_unit=fahrenheit';
+    var default_url = 'https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,rain&daily=weathercode,uv_index_max,temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=Europe%2FBerlin';
+    var url_faraneit ='https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,rain&daily=weathercode,uv_index_max,temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=Europe%2FBerlin&temperature_unit=fahrenheit';
     
     if (checkbox.checked == true){
-      url_selected = url_faraneit;
+      default_url = url_faraneit;
+      myChart.data.datasets[0].label = 'Temperatures (F°)';
     }else{
-      url_selected = url_celsius;
+      myChart.data.datasets[0].label = 'Temperatures (C°)';
     };
 
     async function DataLocation() {
-      console.log("url used : ",url_selected);
-      const response = await fetch(url_selected);
+      console.log("url used : ",default_url);
+      const response = await fetch(default_url);
       const datapoints_location = await response.json();
       return(datapoints_location);
     };
     
     DataLocation().then(datapoints_location => {
-      const Location = datapoints.results[0].name
-      const Weathercode = datapoints_location.daily.weathercode
+      var Location = datapoints.results[0].name
+      var Weathercode = datapoints_location.daily.weathercode
       
-      const min_temp = datapoints_location.daily.temperature_2m_min[0];
-      const max_temp = datapoints_location.daily.temperature_2m_max[0];
-      const temp_unit = datapoints_location.daily_units.temperature_2m_max;
+      var min_temp = datapoints_location.daily.temperature_2m_min[0];
+      var max_temp = datapoints_location.daily.temperature_2m_max[0];
+      var temp_unit = datapoints_location.daily_units.temperature_2m_max;
 
-      const UV = datapoints_location.daily.uv_index_max[0]
-      const Humidity = datapoints_location.hourly.relativehumidity_2m[currentHour-1]+datapoints_location.hourly_units.relativehumidity_2m;
-      const Wind = datapoints_location.hourly.windspeed_10m[currentHour-1]+datapoints_location.hourly_units.windspeed_10m;
+      var UV = datapoints_location.daily.uv_index_max[0]
+      var Humidity = datapoints_location.hourly.relativehumidity_2m[currentHour-1]+datapoints_location.hourly_units.relativehumidity_2m;
+      var Wind = datapoints_location.hourly.windspeed_10m[currentHour-1]+datapoints_location.hourly_units.windspeed_10m;
       
+
       //display the info of querry
       document.getElementById("location-selected-temp").innerHTML = (min_temp)+"|"+(max_temp)+(temp_unit);
       document.getElementById("location-selected-name").innerHTML = (Location);
@@ -172,15 +175,13 @@ function geoCode() {
       document.getElementById("wind").innerHTML = ("wind: "+Wind);
 
       var temperatures = [];
+      var rains = []
       //getting next 6hour forcast
       for (let i = 0; i < 6; i++) {
         data_temp = datapoints_location.hourly.temperature_2m[currentHour+(i)];
         temperatures.push(data_temp);
-      }
 
-      var rains = [];
-      for (let i2 = 0; i2 < 6; i2++) {
-        data_rain = datapoints_location.hourly.rain[currentHour+(i2)];
+        data_rain = datapoints_location.hourly.rain[currentHour+(i)];
         rains.push(data_rain);
       }
     
@@ -188,7 +189,7 @@ function geoCode() {
       console.log("rain: "+rain);
       
       myChart.data.datasets[0].data = temperatures;
-      myChart.data.datasets[1].data = rain;
+      myChart.data.datasets[1].data = rains;
       myChart.update();
     })
   })
