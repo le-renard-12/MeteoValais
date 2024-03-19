@@ -51,37 +51,26 @@ const config = {
   }
 };
 
-// creating the graph with settings
 const dayChart = new Chart(
   document.getElementById('graph'),config
 );
 
-//detecting when resizing window
 window.addEventListener('resize', function () { dayChart.resize() })
 
 // end
 
 
 
-//detect if enter is pressed to be modified
+//detect evvent in searchbar
 searchInput.addEventListener("keydown", event => {
   if (event.isComposing || event.keyCode !== 13) {
-    return;
+      predicting(searchInput.value);
+      return
   }
   geoCode();
   location.href='#content-2';
   return searchWrapper.classList.remove('show');
 });
-
-searchInput.addEventListener('keyup', () => {
-  if (event.isComposing || event.keyCode == 13) {
-    return;
-  }
-  else {
-    predicting(searchInput.value);
-  }
-});
-
 
 
 function predicting(input) {
@@ -132,7 +121,7 @@ function renderResults(results_api) {
 
 
 
-//reload wen changing units
+//update graph when changing units
 let checkbox = document.getElementById("unit-toggle");
 checkbox.addEventListener( "change", () => {
   geoCode();
