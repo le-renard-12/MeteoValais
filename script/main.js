@@ -113,7 +113,8 @@ function predicting(input) {
 function renderResults(results_api) {
   const content = results_api
     .map((item) => {
-      return `<li>${item}</li>`;
+      subPredictions = item.split("|")
+      return `<li onclick="run('${subPredictions[0]}'); location.href='#content-2'; searchInput.value = '${item}'">${item}</li>`;
     })
     .join('');
   resultsWrapper.innerHTML = `<ul>${content}</ul>`;
@@ -197,9 +198,7 @@ function run(input) {
   });
 }
 
-
-
-
+//get curent browser location and displays it
 
 function getLocation() {
   if (navigator.geolocation) {
@@ -208,9 +207,6 @@ function getLocation() {
     console.log("caramba")
   }
 }
-
-
-
 
 async function reverseGeocoding(ApiUrl) {
   console.log("reverse Geocoding url used : ",ApiUrl);
