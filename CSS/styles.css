@@ -297,6 +297,10 @@ ul{
     left: 12.5%;
 }
 
+.clickable:hover{
+    cursor: pointer;
+}
+
 /*position*/
 
 #labels-bas-valais{
@@ -492,13 +496,14 @@ ul{
 
 
 .weather-code-svg{
-    padding-right: 25px;
+    padding:10px;
 }
 
 #location-overwiew{
-    width: 100%;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     height: 100%;
+    width: 100%;
     justify-content: center;
     background-color: rgba(178, 216, 216, .3);
     backdrop-filter: blur(15px);
@@ -507,22 +512,22 @@ ul{
     border-radius: 5px;
     box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.415);
 
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    display: flex;
+    justify-content: space-between;
 }
 
 .location-selected{
     width: 100%;
-
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns:1fr;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
 }
 
 #location-selected-temp,
 #location-selected-name{
     font-size: 25pt;
-    padding-top: 10%;
     display: flex;
     justify-content:center;
 }
@@ -694,12 +699,13 @@ input:checked + .slider:before {
 }
   
 #units{
-    margin-top: 5.5px;
-    margin-left: 5px;
-    margin-right: 5px;
-    display: grid;
-    grid-gap: 17px;
-    grid-template-columns: min-content min-content;
+    margin:0;
+
+    padding: 5.5px 8.5px;
+    padding-top: 0.7px;
+
+    display: flex;
+    justify-content: space-between;
 }
 
 .unit-label,
