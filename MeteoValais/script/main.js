@@ -2,22 +2,24 @@ const searchInput = document.getElementById('search');
 const searchWrapper = document.querySelector('.wrapper');
 const resultsWrapper = document.querySelector('.results');
 
+const date = new Date();
+const currentHour = date.getHours();
+
 // getting 6 next hours
 var next_6_hour = [];
 for (let i_hours = 0; i_hours < 6; i_hours++) {
-  const date = new Date();
-  hour = (date.getHours() + i_hours)%24
+  hour = (currentHour + i_hours)%24
   next_6_hour.push(hour+":00")
 }
 
-const date = new Date();
-const currentHour = date.getHours();
+
+// zone graph
 
 //default graph data
 var rain = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7 ,0.8];
 var temperatures = [1, 2, 3, 4, 5, 6];
 
-//default graf-1 data
+//graf-1 config
 let data = {
   labels: next_6_hour,
   datasets: [{
@@ -36,7 +38,7 @@ let data = {
     backgroundColor: "#0000ff33",
   }],
 };
-//graf-1 config
+
 const config = {
   type: 'scatter',
   data,
@@ -50,11 +52,18 @@ const config = {
 };
 
 // creating the graph with settings
-const myChart = new Chart(
+const dayChart = new Chart(
   document.getElementById('graph'),config
 );
 
-//detect if enter is pressed
+//detecting when resizing window
+window.addEventListener('resize', function () { dayChart.resize() })
+
+// end
+
+
+
+//detect if enter is pressed to be modified
 searchInput.addEventListener("keydown", event => {
   if (event.isComposing || event.keyCode !== 13) {
     return;
@@ -69,38 +78,46 @@ searchInput.addEventListener('keyup', () => {
     return;
   }
   else {
-    search(searchInput.value);
+    predicting(searchInput.value);
   }
 });
 
 
 
-function search(input) {
+function predicting(input) {
   async function fetchPrediction() {
     const url = "https://geocoding-api.open-meteo.com/v1/search?name="+input+"&count=100&language=en&format=json";
+    let prediciton_results;
     var response = await fetch(url);
     var raw_json = await response.json();
-    if (raw_json !== "")  {
-      var prediciton_relusts = raw_json.results.filter(f => f.country.indexOf('Switzerland') > -1);
+    if (raw_json) {
+      // filtesr onli swiss cities
+      prediciton_results = raw_json.results.filter(f => f.country.indexOf('Switzerland') > -1);
     };
-    return(prediciton_relusts);
+    return(prediciton_results);
   };
 
   fetchPrediction().then(api_relust => {
-    var results_api = []
+    var resultsPrediction = []
+    
     api_relust.forEach( function (element,i_results_api) {
-      sugstion = (api_relust[i_results_api].name)+("|")+(api_relust[i_results_api].postcodes[0]);
-      results_api.push(sugstion);
+      let sugestion = (api_relust[i_results_api].name)
+      
+      if (api_relust[i_results_api].postcodes){
+        sugestion += ("|")+(api_relust[i_results_api].postcodes[0]);
+      }
+      resultsPrediction.push(sugestion);
     });
-    renderResults(results_api);
-  });
 
-  if (input.length <3) {
-    searchWrapper.classList.remove('show');
-  }
-  if (input.length > 2) {
-    searchWrapper.classList.add('show');
-  }
+    if (input.length > 0 && resultsPrediction.length > 0) {
+      searchWrapper.classList.add('show');
+      
+    }else{
+      searchWrapper.classList.remove('show');
+    }
+
+    renderResults(resultsPrediction);
+  });  
 }
 
 
@@ -113,6 +130,8 @@ function renderResults(results_api) {
   resultsWrapper.innerHTML = `<ul>${content}</ul>`;
 }
 
+
+
 //reload wen changing units
 let checkbox = document.getElementById("unit-toggle");
 checkbox.addEventListener( "change", () => {
@@ -123,6 +142,8 @@ function geoCode() {
   searchWrapper.classList.remove('show');
   
   let input = searchInput.value;
+
+
   async function fetchData() {
     const url = "https://geocoding-api.open-meteo.com/v1/search?name="+input+"&count=1&language=en&format=json";
     const response = await fetch(url);
@@ -142,9 +163,9 @@ function geoCode() {
     
     if (checkbox.checked == true){
       default_url = url_faraneit;
-      myChart.data.datasets[0].label = 'Temperatures (F°)';
+      dayChart.data.datasets[0].label = 'Temperatures (F°)';
     }else{
-      myChart.data.datasets[0].label = 'Temperatures (C°)';
+      dayChart.data.datasets[0].label = 'Temperatures (C°)';
     };
 
     async function DataLocation() {
@@ -188,9 +209,9 @@ function geoCode() {
       console.log("temp: "+temperatures);
       console.log("rain: "+rain);
       
-      myChart.data.datasets[0].data = temperatures;
-      myChart.data.datasets[1].data = rains;
-      myChart.update();
+      dayChart.data.datasets[0].data = temperatures;
+      dayChart.data.datasets[1].data = rains;
+      dayChart.update();
     })
   })
 };
