@@ -43,6 +43,8 @@ const config = {
   type: 'scatter',
   data,
   options: {
+    tension:0.4,
+    maintainAspectRatio:false,
     scales: {
       y: {
         beginAtZero: true
