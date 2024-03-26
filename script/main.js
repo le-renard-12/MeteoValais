@@ -116,7 +116,7 @@ function renderResults(results_api) {
   const content = results_api
     .map((item) => {
       subPredictions = item.split("|")
-      return `<li onclick="run('${subPredictions[0]}'); location.href='#content-2'; searchInput.value = '${item}'">${item}</li>`;
+      return `<li onclick="run('${subPredictions[0]}'); location.href='#content-2'; searchInput.value = '${subPredictions[0]}'">${item}</li>`;
     })
     .join('');
   resultsWrapper.innerHTML = `<ul>${content}</ul>`;
@@ -229,5 +229,8 @@ function showPosition(position) {
   });
 };
 
+function changeToWeek(){
+  location.href='week.html?search='+searchInput.value;
+}
 
 getLocation();
