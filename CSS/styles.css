@@ -406,7 +406,7 @@ ul{
 
 
 
-.grid-item-1{
+#content-2 .grid-item-1{
     grid-area: box1;
     flex-direction: row;
     justify-content: space-around;
