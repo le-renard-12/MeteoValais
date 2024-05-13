@@ -1,20 +1,25 @@
 const searchParams = new URLSearchParams(window.location.search);
+const unitCheckbox = document.getElementById("unit-toggle");
+const city =searchParams.get('search');
+const resultsGrid = document.querySelector(".grid-container")
+
+run(city);
 
 
-run(searchParams.get('search'));
+function getNextSevenDays() {
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const today = new Date();
+  const nextSevenDays = [];
 
-
-
-const date = new Date();
-const currentHour = date.getHours();
-
-// getting 6 next hours
-var next_6_hour = [];
-for (let i_hours = 0; i_hours < 6; i_hours++) {
-  hour = (currentHour + i_hours)%24
-  next_6_hour.push(hour+":00")
+  for (let i = 0; i < 7; i++) {
+      const nextDay = new Date(today);
+      nextDay.setDate(today.getDate() + i);
+      nextSevenDays.push(daysOfWeek[nextDay.getDay()]);
+  }
+  return nextSevenDays;
 }
 
+const nextSevenDaysNames = getNextSevenDays();
 
 // zone graph
 
@@ -24,7 +29,7 @@ var temperatures = [1, 2, 3, 4, 5, 6];
 
 //graf-1 config
 let data = {
-  labels: next_6_hour,
+  labels: nextSevenDaysNames,
   datasets: [{
     type: "line",
     label: 'Temperatures (C°)',
@@ -60,7 +65,7 @@ const dayChart = new Chart(
   document.getElementById('graph'),config
 );
 
-window.addEventListener('resize', function () { dayChart.resize() })
+window.addEventListener('resize', function () { dayChart.resize() });
 
 // end
 
@@ -88,7 +93,8 @@ async function getLocationForcast(default_url) {
 }
 
 function updateTemperatureUnit(latitude, longitude) {
-  var OpenMeteoApi = "https://api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,rain&daily=weathercode,uv_index_max,temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=Europe%2FBerlin";
+
+  var OpenMeteoApi = "https://api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin";
   dayChart.data.datasets[0].label = 'Temperatures (C°)';
 
   //if (unitCheckbox.checked){
@@ -109,27 +115,38 @@ function run(input) {
 
     getLocationForcast(OpenMeteoApi).then(weatherForecast => {
       
-      let Location = datapoints.results[0].name;
-      let Weathercode = weatherForecast.daily.weathercode;
-      let min_temp = weatherForecast.daily.temperature_2m_min[0];
-      let max_temp = weatherForecast.daily.temperature_2m_max[0];
-      let temp_unit = weatherForecast.daily_units.temperature_2m_max;
-      
-      document.getElementById("location-selected-temp").innerHTML = (min_temp) +"|"+ (max_temp) + (temp_unit);
-      document.getElementById("location-selected-name").innerHTML = (Location);
-
-      var temperatures = [];
-      var rains = [];
-      for (let i = 0; i < 6; i++) {
-        var data_temp = weatherForecast.hourly.temperature_2m[currentHour+(i)];
-        temperatures.push(data_temp);
-        var data_rain = weatherForecast.hourly.rain[currentHour+(i)];
-        rains.push(data_rain);
+      let valuesOfDays = []
+      for (let i = 0; i < 7; i++){
+        let tempMin = weatherForecast.daily.temperature_2m_min[i];
+        let tempMax = weatherForecast.daily.temperature_2m_max[i];
+        let weather_code = weatherForecast.daily.weather_code[i]
+        var values= [tempMin,tempMax,weather_code]
+        valuesOfDays.push(values)
       }
-      
-      dayChart.data.datasets[0].data = temperatures;
-      dayChart.data.datasets[1].data = rains;
-      dayChart.update();
+      display(valuesOfDays)
     });
   });
+}
+
+
+
+function display(valuesOfDays) {
+  let contents = resultsGrid.innerHTML;
+  for (let i = 0; i < valuesOfDays.length; i++) {
+    console.log(valuesOfDays[i]);
+    // [min,max,code]
+    let tempMin = valuesOfDays[i][0];
+    let tempMax = valuesOfDays[i][1];
+    let weatherCode = valuesOfDays[i][2];
+    let day = nextSevenDaysNames[i]
+    
+    contents += `<div class="grid-item grid-item-${i+1}">
+      <span>${day}</span>
+      <img src="picture/svg/pictogram/weather-icons-${weatherCode}-svgrepo-com.svg">
+      <span>${tempMin}|${tempMax}</span>
+    </div>`;
+
+    
+  }
+  resultsGrid.innerHTML = contents
 }
